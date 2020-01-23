@@ -1,0 +1,30 @@
+import numpy as np 
+import matplotlib.pyplot as plt
+%matplotlib inline
+import os
+
+ms = 1
+fs = 15
+fig = plt.figure(figsize=(10,10))
+
+T1 = np.loadtxt(fname = MAPbBr3_Transmission_00001.txt, skiprows=15)  # before light soaking
+wavelength = T1[,0]
+trans = T1[,1]
+absorb = 2 - np.log10(trans)  # convert transmission into absorption
+plt.plot(wavelength, absorb, markersize=ms, label='Initial', color='k')
+
+T2 = np.loadtxt(fname = MAPbBr3_Transmission_00025.txt, skiprows=15)  # after light soaking
+wavelength = T2[,0]
+trans = T2[,1]
+absorb = 2 - np.log10(trans)
+plt.plot(wavelength, absorb, markersize=ms, label='Final', color='r')
+plt.legend(loc='upper right')
+
+title = 'Sample 9 - Film Absorbance - Light 4-11-19'
+plt.title(title, fontsize = fs+5)
+plt.ylabel('Absorbance', fontsize = fs)
+plt.xlabel('Wavelength (nm)', fontsize = fs)
+plt.xlim(350, 1020)
+plt.ylim(0, 1.5)
+plt.show()
+fig.savefig('Sample 9 - Light Film Absorbance.png')

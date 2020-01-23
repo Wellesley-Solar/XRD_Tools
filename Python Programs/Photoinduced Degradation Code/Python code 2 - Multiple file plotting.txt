@@ -1,0 +1,34 @@
+# Samantha Hoang
+# This code should be used for plotting many txt files of data into their own individual plots. Place the txt files in the same directory as your jupyter notebook.
+
+import numpy as np 
+import matplotlib.pyplot as plt
+%matplotlib inline
+import csv
+import os
+
+files = os.listdir(os.getcwd())
+print(files[1:-1])  
+
+for i in files[1:-1]:  # read all txt files in the same directory and same the file names in a list
+    filename = i
+    print(filename)
+    data = []  # create empty list
+    with open(filename) as csvfile:
+        reader = csv.reader(csvfile, delimiter=',') # change contents to floats
+        for row in reader:  # each row is a list
+            data.append(row)
+    data = np.asarray(data)
+    
+    fig = plt.figure(figsize=(10,10))
+    fs = 15
+    ms = 1
+    wavelength = data[:,0]
+    absorption = data[:,1] 
+    absorption = absorption - bg_abs
+    plt.title(filename[:-4], fontsize = fs+5)
+    plt.plot(wavelength, absorption, markersize=ms)
+    plt.ylabel('Absorption', fontsize = fs)
+    plt.xlabel('Wavelength (nm)', fontsize = fs)
+    plt.show()
+    fig.savefig(filename[:-4]+ '.png')
