@@ -1,5 +1,5 @@
 %This program takes an imported xrd data set (stacked csv) and attempts to quassian fit up to three peaks. Only valide for Matlab r2016b
-
+%This program needs to be improved for curve fitting
 dt = 20 ;
 t(1) = 0;
 lowerq = 0.95;
