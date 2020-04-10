@@ -38,7 +38,7 @@ data_sub = data{1}(lim1:lim2,:);
 %plot file for subtracting background and manually chose points for
 %background line
 plot(data_sub(:,1),data_sub(:,2))
-xlabel('Q [Å^-^1]');
+xlabel('Q [ï¿½^-^1]');
 ylabel('Intensity [a.u.]');
 [x,y] = getpts;
 back = interp1(x,y,data_sub(:,1),'spline');
