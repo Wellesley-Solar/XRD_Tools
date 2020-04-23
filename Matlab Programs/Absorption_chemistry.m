@@ -34,4 +34,33 @@ for i = 1:(length(fileNames)-1)
 end
 
 
-
+% %Trying to fituvvis data from Cary
+% %need to integrate into absorption_chemistry code
+% 
+% figure
+% hold on
+% 
+% lowernm = 250;
+% uppernm = 550;
+% lowerback = 600;
+% upperback = 800;
+% 
+% uv_switch = 349;
+% 
+% [d, lim1] = min(abs(ABSData(:,1)-lowernm));
+% [d, lim2] = min(abs(ABSData(:,1)-uppernm));
+% [d, lim3] = min(abs(ABSData(:,1)-lowerback));
+% [d, lim4] = min(abs(ABSData(:,1)-upperback));
+% 
+% wave = ABSData(lim2:lim1,1);
+% 
+% %correct for bump where the uv-light turns on
+% [d, lim5] = min(abs(ABSData(:,1)-uv_switch));
+% 
+% for i = 1:8
+%     shift(i) = ABSData(lim5-1,(i+2))-ABSData(lim5,i+2);
+%     data_shift(:,i) = [ABSData(1:lim5-1,i+2); (ABSData(lim5:end,i+2)+shift(i))]; 
+%     back(i) = mean(data_shift(lim4:lim3,i));
+%     data_sub(:,i) = data_shift(lim2:lim1,i)-back(i);
+%     plot(wave,data_sub(:,i))
+% end
