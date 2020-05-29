@@ -81,110 +81,60 @@ plt.plot(np.array(q_sub),int_correct)
 # %%
 #guassian fits
 from scipy.optimize import curve_fit
+#pick fitting and initial guess
+# it would be good to iteratively do these guesses, or use info from qlimit
+i = 2
+p0 = [50, 2.07, 0.03, 70,2.10, 0.01,70,2.10, 0.01]
 
 def gaussian(x, height, center, width):
     return height*np.exp(-(x - center)**2/(2*width**2)) 
 
-def two_gaussians(x, h1, c1, w1, h2, c2, w2):
-    return (gaussian(x, h1, c1, w1) +
-        gaussian(x, h2, c2, w2))
+if i == 2:
+    def two_gaussians(x, h1, c1, w1, h2, c2, w2):
+        return (gaussian(x, h1, c1, w1) +
+            gaussian(x, h2, c2, w2))
+    popt, pcov = curve_fit(two_gaussians, np.array(q_sub), int_correct, p0[0:6])
+    plt.plot(np.array(q_sub), two_gaussians(np.array(q_sub),*popt))
+    pars_1 = popt[0:3]
+    pars_2 = popt[3:6]
+    gauss_peak_1 = gaussian(np.array(q_sub), *pars_1)
+    gauss_peak_2 = gaussian(np.array(q_sub), *pars_2)
+    plt.plot(np.array(q_sub), gauss_peak_1, color='red')
+    plt.plot(np.array(q_sub),gauss_peak_2,color='blue') 
+    print('lattice spacing:', [4*math.pi/popt[1], 4*math.pi/popt[4]])
 
-#p0 is the orignial guessess for the files, if we guess that both peaks are in the center still seems to fit. 
-#Can likely use this to get guess values - fit original peak for chemistry adnd then use that as guess
+if i == 3:
+    def three_gaussians(x, h1, c1, w1, h2, c2, w2, h3, c3, w3):
+        return (gaussian(x, h1, c1, w1) +
+            gaussian(x, h2, c2, w2)+gaussian(x, h3, c3, w3))
+    popt, pcov = curve_fit(three_gaussians, np.array(q_sub), int_correct, p0)
+    plt.plot(np.array(q_sub), three_gaussians(np.array(q_sub),*popt))
+    pars_1 = popt[0:3]
+    pars_2 = popt[3:6]
+    pars_3 = popt[6:-1]
+    gauss_peak_1 = gaussian(np.array(q_sub), *pars_1)
+    gauss_peak_2 = gaussian(np.array(q_sub), *pars_2)
+    gauss_peak_3 = gaussian(np.array(q_sub), *pars_3)
+    plt.plot(np.array(q_sub), gauss_peak_1, color='red')
+    plt.plot(np.array(q_sub),gauss_peak_2,color='blue') 
+    plt.plot(np.array(q_sub),gauss_peak_3,color='green')
+    print('lattice spacing:', [4*math.pi/popt[1], 4*math.pi/popt[4],4*math.pi/popt[7]])
 
-popt, pcov = curve_fit(two_gaussians, np.array(q_sub), int_correct, p0=[50, 2.07, 0.03, 70,2.10, 0.01])
-
-plt.plot(np.array(q_sub), int_correct)
-plt.plot(np.array(q_sub), two_gaussians(np.array(q_sub),*popt))
-
-pars_1 = popt[0:3]
-pars_2 = popt[3:6]
-gauss_peak_1 = gaussian(np.array(q_sub), *pars_1)
-gauss_peak_2 = gaussian(np.array(q_sub), *pars_2)
-
-popt_uncertainties = np.sqrt(np.diag(pcov))
-uncertainty = sum(popt_uncertainties)
-print('lattice spacing:', [4*math.pi/popt[1], 4*math.pi/popt[4]])
-print('uncertainties:', popt_uncertainties)
-print('uncertainty:', uncertainty)
-
-plt.plot(np.array(q_sub), gauss_peak_1)
-plt.plot(np.array(q_sub),gauss_peak_2,color='blue') 
-plt.plot(np.array(q_sub),gauss_peak_1+gauss_peak_2,color='green')
-plt.xlabel('Q')
-plt.ylabel('Intensity')
-
-# %%
-#guassian fit (single)
-from scipy.optimize import curve_fit
-
-def gaussian(x, height, center, width):
-    return height*np.exp(-(x - center)**2/(2*width**2)) 
-
-
-#p0 is the orignial guessess for the files, if we guess that both peaks are in the center still seems to fit. 
-#Can likely use this to get guess values - fit original peak for chemistry adnd then use that as guess
-
-popt, pcov = curve_fit(gaussian, np.array(q_sub), int_correct, p0=[80, 2.11, 0.01])
+else: 
+    popt, pcov = curve_fit(gaussian, np.array(q_sub), int_correct, p0[0:3])
+    plt.plot(np.array(q_sub), gaussian(np.array(q_sub),*popt))
+    print('lattice spacing:', [4*math.pi/popt[1]])
 
 plt.plot(np.array(q_sub), int_correct)
-plt.plot(np.array(q_sub), gaussian(np.array(q_sub),*popt))
+print(popt)
 
-pars_1 = popt[0:3]
-gauss_peak_1 = gaussian(np.array(q_sub), *pars_1)
-
-popt_uncertainties = np.sqrt(np.diag(pcov))
-uncertainty = sum(popt_uncertainties)
-
-print('lattice spacing:', 4*math.pi/popt[1])
-print('uncertainties:', popt_uncertainties)
-print('uncertainty:', uncertainty)
-
-plt.plot(np.array(q_sub), gauss_peak_1)
+#popt_uncertainties = np.sqrt(np.diag(pcov))
+#uncertainty = sum(popt_uncertainties)
+#print('uncertainties:', popt_uncertainties)
+#print('uncertainty:', uncertainty)
 
 plt.xlabel('Q')
 plt.ylabel('Intensity')
 
-# %%
-#three guassian fits
-from scipy.optimize import curve_fit
-
-def gaussian(x, height, center, width):
-    return height*np.exp(-(x - center)**2/(2*width**2)) 
-
-def three_gaussians(x, h1, c1, w1, h2, c2, w2, h3, c3, w3):
-    return (gaussian(x, h1, c1, w1) +
-        gaussian(x, h2, c2, w2)+gaussian(x, h3, c3, w3))
-
-#p0 is the orignial guessess for the files, if we guess that both peaks are in the center still seems to fit. 
-#Can likely use this to get guess values - fit original peak for chemistry adnd then use that as guess
-
-popt, pcov = curve_fit(three_gaussians, np.array(q_sub), int_correct, p0=[5, 2.03, 0.05, 10,2.07, 0.05, 35, 2.14, 0.01])
-
-plt.plot(np.array(q_sub), int_correct)
-#plt.plot(np.array(q_sub), three_gaussians(np.array(q_sub),*popt))
-
-pars_1 = popt[0:3]
-pars_2 = popt[3:6]
-pars_3 = popt[6:9]
-gauss_peak_1 = gaussian(np.array(q_sub), *pars_1)
-gauss_peak_2 = gaussian(np.array(q_sub), *pars_2)
-gauss_peak_3 = gaussian(np.array(q_sub), *pars_3)
-
-popt_uncertainties = np.sqrt(np.diag(pcov))
-uncertainty = sum(popt_uncertainties)
-print('lattice spacing:', [4*math.pi/popt[1], 4*math.pi/popt[4],4*math.pi/popt[7]])
-print('uncertainties:', popt_uncertainties)
-print('uncertainty:', uncertainty)
-
-plt.plot(np.array(q_sub), gauss_peak_1, color='yellow')
-plt.plot(np.array(q_sub),gauss_peak_2,color='blue')
-plt.plot(np.array(q_sub),gauss_peak_3,color='red')
-#plt.plot(np.array(q_sub),gauss_peak_1+gauss_peak_2,color='green')
-plt.xlabel('Q [1/Å]')
-plt.ylabel('Intensity  [a.u.]')
-plt.savefig('50% Bromine after Light.png')
-
-
-
+#save image
 # %%
