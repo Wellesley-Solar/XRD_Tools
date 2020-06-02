@@ -17,27 +17,33 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import math
 import scipy
-# import scipy.signal
+from scipy.optimize import curve_fit
+from math import pi,sin
+
 #%%
-#Open the csv file and plot the first and last frames of the data. Index -1 plots last frame in a data set'''
-# this could be improved such that whole data file is imported insteaof specific rows
-with open('/Users/rbelisle/Desktop/startendxrd/xrdstartend2.csv') as csv_file:
-    csv_reader = csv.reader(csv_file, delimiter=',')
-    line_count = 0
-    x=[]
-    y=[]
-    z=[]
-    for row in csv_reader:
-        if line_count == 0:
-            print(f'Column names are {", ".join(row)}')
-            line_count += 1
-        else:
-            x.append(float(row[0]))
-            y.append(float(row[10]))
-            z.append(float(row[-1]))
-            line_count += 1
-plt.plot(x,y, marker='o', color='blue')
-plt.plot(x,z, marker='o', color='red')
+#Defining all functions that will be used in program
+def readcsv(filename):
+    data = pd.read_csv(filename)
+    return(np.array(data))
+
+def find_nearest(array, value):
+    array = np.asarray(array)
+    idx = (np.abs(array - value)).argmin()
+    return array[idx]
+
+def gaussian(x, height, center, width):
+    return height*np.exp(-(x - center)**2/(2*width**2)) 
+
+def two_gaussians(x, h1, c1, w1, h2, c2, w2):
+        return (gaussian(x, h1, c1, w1) +
+            gaussian(x, h2, c2, w2))
+
+def three_gaussians(x, h1, c1, w1, h2, c2, w2, h3, c3, w3):
+        return (gaussian(x, h1, c1, w1) +
+            gaussian(x, h2, c2, w2)+gaussian(x, h3, c3, w3))
+#%%
+perov = readcsv('/Users/rbelisle/Desktop/startendxrd/C1_L60_on.csv')
+plt.plot(perov[:,0],perov[:,1])
 plt.title('Initial:')
 plt.xlabel('2-theta')
 plt.ylabel('Intensity')
@@ -45,54 +51,70 @@ plt.show()
 
 # %%
 # Convert two theta to Q and set data limits
-import math
-print(math.pi)
-q =[4*math.pi*math.sin(math.pi/180*row/2)/0.9763 for row in x]
-plt.plot(q,y, marker='.',color='blue')
+#should turn this into a function that accepts an array and limits
+q =[4*math.pi*math.sin(math.pi/180*row/2)/0.9763 for row in perov[:,0]]
+#plt.plot(q,y, marker='.',color='blue')
 plt.title('Initial:')
 plt.xlabel('Q')
 plt.ylabel('Intensity')
-plt.show()
-
-def find_nearest(array, value):
-    array = np.asarray(array)
-    idx = (np.abs(array - value)).argmin()
-    return array[idx]
-
-q_1 = 1.9
-q_2 = 2.2
+q_1 = 1.98
+q_2 = 2.22
 limit1 = q.index(find_nearest(q, q_1))
 limit2 = q.index(find_nearest(q, q_2))
-
 q_sub = q[limit1:limit2]
-int_sub = y[limit1:limit2]
-plt.plot(q_sub,int_sub)
+
+#q_sub = q[limit1:limit2]
+#int_sub = y[limit1:limit2]
+perov_sub = perov[limit1:limit2,1:-1]
+plt.plot(q_sub,perov_sub[:,1])
+
 #%%
 #remove background
-slope = (np.mean(y[limit2-10:limit2])-np.mean(y[limit1:limit1+10]))/(np.mean(q[limit2-10:limit2])-np.mean(q[limit1:limit1+10]))
+size = perov_sub.shape
+q_bins = size[0]
+num_frames = size[1]
+slope = np.zeros((num_frames,1))
+b = np.zeros((num_frames,1))
+back = np.zeros((q_bins,num_frames))
+int_correct = np.zeros((q_bins,num_frames))
 
-b = y[limit1]-slope*q[limit1]
-back = [slope*element+b for element in q]
-
-int_correct = np.array(int_sub)-np.array(back[limit1:limit2])
+#accept a data file and range and returns average values at start and end of range
+for j in range(num_frames): 
+    slope[j] = ((np.mean(perov_sub[-10:-1,j])-np.mean(perov_sub[0:10,j]))/(np.mean(q[limit2-10:limit2])-np.mean(q[limit1:limit1+10])))
+    b[j]=perov_sub[0,j]-slope[j]*q_sub[0]
+    back[:,j] = [slope[j]*element+b[j] for element in q_sub]
+    int_correct[:,j] = perov_sub[:,j]-np.array(back[:,j])
 
 plt.plot(np.array(q_sub),int_correct)
 
 # %%
-#guassian fits
-from scipy.optimize import curve_fit
+#iterative guassian fitting
+p0 = [100, 2.07, 0.01, 70,2.07, 0.01]
+intensity_1 = np.zeros((num_frames,1))
+intensity_2= np.zeros((num_frames,1))
+lattice_1= np.zeros((num_frames,1))
+lattice_2 = np.zeros((num_frames,1))
+for j in range(num_frames):
+    popt, pcov = curve_fit(two_gaussians, np.array(q_sub), int_correct[:,j], p0[0:6])
+    intensity_1[j] = popt[0]
+    lattice_1[j] = 4*math.pi/popt[1] 
+    intensity_2[j] = popt[3]
+    lattice_2[j] = 4*math.pi/popt[4]
+    p0 = popt
+print(lattice_1)
+#%%
+print(lattice_2)
+plt.plot(lattice_1)
+# %%
+#guassian fits with plotting
 #pick fitting and initial guess
 # it would be good to iteratively do these guesses, or use info from qlimit
 i = 2
 p0 = [50, 2.07, 0.03, 70,2.10, 0.01,70,2.10, 0.01]
 
-def gaussian(x, height, center, width):
-    return height*np.exp(-(x - center)**2/(2*width**2)) 
+
 
 if i == 2:
-    def two_gaussians(x, h1, c1, w1, h2, c2, w2):
-        return (gaussian(x, h1, c1, w1) +
-            gaussian(x, h2, c2, w2))
     popt, pcov = curve_fit(two_gaussians, np.array(q_sub), int_correct, p0[0:6])
     plt.plot(np.array(q_sub), two_gaussians(np.array(q_sub),*popt))
     pars_1 = popt[0:3]
@@ -104,9 +126,6 @@ if i == 2:
     print('lattice spacing:', [4*math.pi/popt[1], 4*math.pi/popt[4]])
 
 if i == 3:
-    def three_gaussians(x, h1, c1, w1, h2, c2, w2, h3, c3, w3):
-        return (gaussian(x, h1, c1, w1) +
-            gaussian(x, h2, c2, w2)+gaussian(x, h3, c3, w3))
     popt, pcov = curve_fit(three_gaussians, np.array(q_sub), int_correct, p0)
     plt.plot(np.array(q_sub), three_gaussians(np.array(q_sub),*popt))
     pars_1 = popt[0:3]
