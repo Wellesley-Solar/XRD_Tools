@@ -89,19 +89,20 @@ plt.plot(np.array(q_sub),int_correct)
 
 # %%
 #iterative guassian fitting
-p0 = [100, 2.07, 0.01, 70,2.07, 0.01] 
-intensity_1 = np.zeros((num_frames,1))
-intensity_2= np.zeros((num_frames,1))
-lattice_1= np.zeros((num_frames,1))
-lattice_2 = np.zeros((num_frames,1))
+p0 = [100, 2.07, 0.01] 
+intensity_1 = np.zeros((num_frames)) #create correct size arrays for running in the loop
+intensity_2= np.zeros((num_frames))
+lattice_1= np.zeros((num_frames))
+lattice_2 = np.zeros((num_frames))
+print(lattice_1)
 for j in range(num_frames):
-    popt, pcov = curve_fit(two_gaussians, np.array(q_sub), int_correct[:,j], p0[0:6])
+    popt, pcov = curve_fit(gaussian, np.array(q_sub), int_correct[:,j], p 0)
     intensity_1[j] = popt[0]
     lattice_1[j] = 4*math.pi/popt[1] 
-    intensity_2[j] = popt[3]
-    lattice_2[j] = 4*math.pi/popt[4]
+   # intensity_2[j] = popt[3]
+    #lattice_2[j] = 4*math.pi/popt[4]
     p0 = popt #once you have the initial fit use that as your next guess, we expect things to be continuous so this helps with that
-print(lattice_1)
+    print(lattice_1)
 #%%
 intensity_1 = np.zeros((num_frames))
 intensity_2= np.zeros((num_frames))
@@ -173,9 +174,9 @@ plt.xlabel('Q')
 plt.ylabel('Intensity')
 
 # %%
-time = np.zeros(num_frames)
+time = np.zeros(num_frames) #create empty array for time of correct length
 for x in range(num_frames):
-    time[x] = x*2 
+    time[x] = x*20 + 20 #xray dose is 20s per frame
 
 
 # %%
