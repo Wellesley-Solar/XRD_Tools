@@ -96,7 +96,7 @@ lattice_1= np.zeros((num_frames))
 lattice_2 = np.zeros((num_frames))
 print(lattice_1)
 for j in range(num_frames):
-    popt, pcov = curve_fit(gaussian, np.array(q_sub), int_correct[:,j], p 0)
+    popt, pcov = curve_fit(gaussian, np.array(q_sub), int_correct[:,j], p0)
     intensity_1[j] = popt[0]
     lattice_1[j] = 4*math.pi/popt[1] 
    # intensity_2[j] = popt[3]
