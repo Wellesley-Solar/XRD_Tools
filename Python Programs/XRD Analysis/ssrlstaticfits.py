@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats
 import scipy.optimize 
+from scipy.optimize import curve_fit
 import pandas as pd
 
 #%% Import Data
@@ -17,7 +18,6 @@ perov = perov_import[:,1:-1] #seperate XRD intensities from rest of data
 
 
 #%% #Trim and Remove Background
-# THIS FUNCTION DOESN'T WORK YET. FOLLOW 04_Introduction...UNTIL UPDATED
 from xrdfunctions import find_nearest, trim_data
 q_1 = 0.95
 q_2 = 1.15
@@ -32,4 +32,8 @@ from xrdfunctions import gaussian, two_gaussians
 p0 = [200,1, 0.1, 150, 1.05,.01] #best guess for number of peaks an initial values
 popt, pcov = curve_fit(two_gaussians, q_sub, perov_to_fit, p0)
 
-#Plot
+#%%#Plot
+plt.figure(figsize=(8,6)) #make plot larger
+plt.plot(q_sub,perov_to_fit,'r-', label='$MAPbIBr_2$') #plot subfield of data
+plt.plot(q_sub,two_gaussians(q_sub, *popt),'b--', label='Model') #plot best fit
+# %%
