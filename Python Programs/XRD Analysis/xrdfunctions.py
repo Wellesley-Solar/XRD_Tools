@@ -19,7 +19,7 @@ def two_to_q(two_theta, wave):
 def find_nearest(array, value):
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
-    return array[idx]
+    return idx
 
 def trim_data(x, data, limit1, limit2):
     set1 = find_nearest(x,limit1)
@@ -27,8 +27,8 @@ def trim_data(x, data, limit1, limit2):
     return x[set1:set2], data[set1:set2,:]
 
 def back_substract(x, data, length):
-    x_linear = np.hstack(x[0:length], x[-length:-1]) #I'm taking the starting and ending values
-    data_linear = np.hstack(data[0:length], data[-length:-1]) #We'll use these to fit a straight line
+    x_linear = np.hstack((x[0:length], x[-length:-1])) #I'm taking the starting and ending values
+    data_linear = np.hstack((data[0:length], data[-length:-1])) #We'll use these to fit a straight line
     slope, intercept = np.polyfit(x_linear, data_linear, 1) #Do linear fit
     back = slope*x+intercept 
     return data-back
@@ -47,3 +47,6 @@ def multi_gaussian(x, trips):
     return np.sum(peaks, axis=0)
 
 
+
+
+# %%
