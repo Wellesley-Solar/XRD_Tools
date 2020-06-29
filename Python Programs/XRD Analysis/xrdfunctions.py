@@ -58,6 +58,7 @@ def two_gaussians(x, a1, b1, c1, a2, b2, c2):
             gaussian(x, a2, b2, c2))
 
 def multi_gaussian(x, guesses):
+    #NOTE This function does not work with curve fitting yet TBD
     # x is 1D array of 2-theta or q values for our fitting
     # trips is an array of fits i.e. [[200, 1, .01], [150, 1.05. .02]]
     peaks = [gaussian(x, fit[0], fit[1], fit[2]) for fit in guesses]
