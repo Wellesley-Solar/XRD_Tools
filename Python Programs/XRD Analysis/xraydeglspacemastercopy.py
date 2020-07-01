@@ -22,7 +22,13 @@ def find_nearest(array, value):
 #Single gaussian fit to plot
 def gaussian(x, height, center, width):
     return height*np.exp(-(x - center)**2/(2*width**2)) 
-
+#Turn two theta in q
+def two_to_q(two_theta, wave):
+    #two_theta is a 1D array of two_theta angles
+    #wave is the X-ray energy in angstroms
+    rad_theta = two_theta/2*np.pi/180
+    q = 4*np.pi*np.sin(rad_theta)/wave
+    return q
 
 #Plotting initial frame of data
 perov = readcsv('put_filename_here')
@@ -37,13 +43,12 @@ plt.legend(loc="upper right")
 
 #Define wavelength and convert two-theta to Angstroms
 #Note that our initial 2-theta values are in degrees, not radians
-‘Two theta to q’
-ssrl_wave=0.9763 #wavelength from SLAC
-print(ssrl_wave)
-q =[4*math.pi*math.sin(math.pi/180*row/2)/(ssrl_wave) for row in x]
-print(q)
+#‘Two theta to q’
+q = two_to_q(perov[:,0],0.9763)
+Q= q.tolist()
+y=perov[:,1]
 plt.figure(figsize=(8,6)) 
-plt.plot(q,y, marker='.',color='r')
+plt.plot(Q,y, marker='.',color='r')
 plt.title('Initial:')
 plt.xlabel('Q')
 plt.ylabel('Intensity')
@@ -52,8 +57,8 @@ plt.show()
 #choose a peak and find its limits 
 q_1 = .98
 q_2 = 1.15
-limit1 = q.index(find_nearest(q, q_1))
-limit2 = q.index(find_nearest(q, q_2))
+limit1 = Q.index(find_nearest(q, q_1))
+limit2 = Q.index(find_nearest(q, q_2))
 q_sub = q[limit1:limit2]
 perov_sub = perov[limit1:limit2,1:-1]# range will depend on the number of frames you have 
 plt.plot(q_sub,perov_sub[:,-1])
