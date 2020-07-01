@@ -57,8 +57,8 @@ plt.show()
 #choose a peak and find its limits 
 q_1 = .98
 q_2 = 1.15
-limit1 = q.index(find_nearest(q, q_1))
-limit2 = q.index(find_nearest(q, q_2))
+limit1 = Q.index(find_nearest(q, q_1))
+limit2 = Q.index(find_nearest(q, q_2))
 q_sub = q[limit1:limit2]
 perov_sub = perov[limit1:limit2,1:-1]# range will depend on the number of frames you have 
 plt.plot(q_sub,perov_sub[:,-1])
