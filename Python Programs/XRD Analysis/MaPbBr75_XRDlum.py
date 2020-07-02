@@ -52,7 +52,7 @@ def trim_data(x, data, limit1, limit2):
 # In[310]:
 
 
-perov = readcsv('E1MAPbBr75L60On.csv') #openfile of interest
+perov = readcsv('/Volumes/GoogleDrive/Shared drives/Wellesley Solar/Current Projects/SSRL January 2020/XRay_CSV files/E1_MAPbBr75_Light60min.csv') #openfile of interest
 plt.plot(perov[:,0],perov[:,1]) #plot inititial data
 plt.title('Initial:')
 plt.xlabel('2-theta')
@@ -78,6 +78,9 @@ plt.show()
 
 # In[312]:
 
+#FEEDBACK You need to update your limits to capture the full peak...
+#Plotting your trimmed data you've clipped the left hand side of that peak...
+#which will impact your fitting. 
 
 #choose a peak and find its limits 
 #plt.plot(Q,y, marker='.',color='r')
@@ -154,6 +157,8 @@ lattice_3 = np.zeros((num_frames))
 
 # In[317]:
 
+#FEEDBACK I encourage you to clean up this so it only has the bits you're using..
+#it makes it difficult to identify which parts of code are important to your fitting
 
 #guassian fits with plotting
 #pick fitting and initial guess
@@ -267,7 +272,7 @@ plt.plot(np.array(q_sub), int_correct[:,j],color='black')
 # it would be good to iteratively do these guesses, or use info from qlimit
 #real issue in fitting - maybe this is four peaks? Perhaps I can look at inflection point instead
 i = 3
-j = 28
+j = -1 #FEEDBACK -1 calls the last element in a list or an array
 p0 = [120, 1.06, 0.02,62,1.06, 0.03, 30.5, 1.06, 0.05]
 plt.plot(np.array(q_sub), int_correct[:,j],color='black')
 if i == 2:
