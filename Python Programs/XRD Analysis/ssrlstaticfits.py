@@ -9,7 +9,7 @@ import pandas as pd
 
 #%% Import Data
 from xrdfunctions import *
-perov_import = csv_to_np('/Users/rbelisle/Desktop/startendxrd/xrdstartend2.csv')
+perov_import = csv_to_np('/Volumes/GoogleDrive/Shared drives/Wellesley Solar/Current Projects/SSRL January 2020/XRay_CSV files/B1_MaPbI2Br_Light60min.csv')
 
 #%% Covert to Q
 q = two_to_q(perov_import[:,0],0.9763)
@@ -17,11 +17,12 @@ perov = perov_import[:,1:-1] #seperate XRD intensities from rest of data
 
 
 #%% #Trim and Remove Background
+miller = [2, 0, 0] #peak you are trying to capture
 q_1 = 1.98
 q_2 = 2.2
 q_sub, perov_sub = trim_data(q,perov,q_1,q_2)
 
-file_to_fit = 2 #choose the index of the file you want ot look at
+file_to_fit = 0 #choose the index of the file you want ot look at
 perov_to_fit = back_substract(q_sub,perov_sub[:,file_to_fit],10)
 
 #%% #Do Curve Fitting
@@ -35,4 +36,11 @@ plt.plot(q_sub, gaussian(q_sub, popt[3],popt[4],popt[5]), 'c--', label='Peak 2')
 plt.xlabel('Q [$\AA^{-1}$]',size=12) #Define x-axis label
 plt.ylabel('Intensity [a.u.]',size=12)#Define y-axis label
 plt.legend(loc="upper right")#Put legend in upper left hand corner
+
+#%% Calculate and share lattice spacging
+print('Intensity:', popt[0], popt[3])
+print('Lattice Spacing:', q_to_a(popt[1],miller),q_to_a(popt[4],miller))
+#%% Do Curve Fiting Option 2
+
+
 
