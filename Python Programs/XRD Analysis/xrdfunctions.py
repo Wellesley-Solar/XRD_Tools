@@ -1,5 +1,6 @@
 #%%
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 import scipy.stats
 import scipy.optimize 
@@ -63,6 +64,12 @@ def multi_gaussian(x, guesses):
     # trips is an array of fits i.e. [[200, 1, .01], [150, 1.05. .02]]
     peaks = [gaussian(x, fit[0], fit[1], fit[2]) for fit in guesses]
     return np.sum(peaks, axis=0)
+
+def q_to_a(center,plane):
+    #center is the center of an xrd peak
+    #plane is a list of the formal [h,k,l]
+    a = 2*math.pi*math.sqrt(plane[0]**2+plane[1]**2+plane[2]**2)/center
+    return a
 
 
 
