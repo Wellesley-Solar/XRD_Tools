@@ -73,6 +73,8 @@ def q_to_a(center,plane):
 
 
 def num_files(data):
+    #data is the file you are currently analyzing
+    #returns columns of data (i.e. frames for XRD data from SSRL)
     size = data.shape
     return size[1]
 
