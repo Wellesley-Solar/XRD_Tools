@@ -72,6 +72,8 @@ def q_to_a(center,plane):
     return a
 
 
-
+def num_files(data):
+    size = data.shape
+    return size[1]
 
 # %%
