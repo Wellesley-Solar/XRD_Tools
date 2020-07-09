@@ -51,8 +51,9 @@ def gaussian(x, a, b, c):
     #generic gaussian curve, for XRD analysis:
     #x is a 1D array of two theta or q values
     #a is the max intensity of the peak and representative of crystalling
-    #b is the peak position and    
-    return a*np.exp(-(x - b)**2/(2*c**2))
+    #b is the peak position and 
+    # c is the FWHM
+    return a/(c*np.sqrt(2*np.pi))*np.exp(-(x - b)**2/(2*c**2))
 
 def two_gaussians(x, a1, b1, c1, a2, b2, c2):
         return (gaussian(x, a1, b1, c1) +
@@ -64,6 +65,23 @@ def multi_gaussian(x, guesses):
     # trips is an array of fits i.e. [[200, 1, .01], [150, 1.05. .02]]
     peaks = [gaussian(x, fit[0], fit[1], fit[2]) for fit in guesses]
     return np.sum(peaks, axis=0)
+
+def lorentz(x, a, b, c):
+    #generic lorentzian curve, for xrd analysis
+    #x is a 1D array of two theta or q values
+    #a is the max intensity of the peak and representative of crystalling
+    #b is the peak position and 
+    # c is the FWHM
+    return a/np.pi*(c/((x-b)**2+c**2))
+
+def pvoigt(x, e, a, b, c):
+    #pseudovoigt curve common in xrd analysis
+    #linear combination of lorentzian and gaussian curves
+    #e is the fraction that is lorentzian
+    return e*lorentz(x, a, b, c) + (1-e)*gaussian(x,a,b,c)
+
+def mult_pvoigt(x, e, a, b, c, a2, b2, c2, a3, b3, c3):
+    return pvoigt(x, e, a, b, c) + pvoigt(x, e, a2, b2, c2) +  pvoigt(x, e, a3, b3, c3) 
 
 def q_to_a(center,plane):
     #center is the center of an xrd peak
