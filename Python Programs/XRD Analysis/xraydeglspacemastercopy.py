@@ -127,3 +127,17 @@ plt.show()
 #FEEDBACK Program currently plots lattice spacing vs time on top of plot of XRD patterns... 
 #Update code so that it gives you a correct figure
 # %%
+
+
+#%%
+def br_frac (x) :
+    brfrac=(x - 6.256)/-0.347
+    if brfrac<0:
+        br=0
+    if brfrac>1:
+        br=100
+    else:
+        brpercent=100*br1
+    return brpercent
+#%%
+    
