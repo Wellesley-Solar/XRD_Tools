@@ -66,6 +66,12 @@ def multi_gaussian(x, guesses):
     peaks = [gaussian(x, fit[0], fit[1], fit[2]) for fit in guesses]
     return np.sum(peaks, axis=0)
 
+#%% Define three peak fitting
+def three_gaussians(x, a1, b1, c1, a2, b2, c2, a3, b3, c3):
+    return (gaussian(x, a1, b1, c1) +
+            gaussian(x, a2, b2, c2)+ #this would be your initial peak center in Q
+            gaussian(x, a3, b3, c3))
+
 def lorentz(x, a, b, c):
     #generic lorentzian curve, for xrd analysis
     #x is a 1D array of two theta or q values
@@ -89,11 +95,20 @@ def q_to_a(center,plane):
     a = 2*math.pi*math.sqrt(plane[0]**2+plane[1]**2+plane[2]**2)/center
     return a
 
-
 def num_files(data):
     #data is the file you are currently analyzing
     #returns columns of data (i.e. frames for XRD data from SSRL)
     size = data.shape
     return size[1]
+
+def q_to_chem(center,plane):
+    #center is the center of an xrd peak
+    #plane is a list of the formal [h,k,l]
+    #takes peak position in q and converts it to bromine percentage
+    #using linear fit for bromine fraction on lattice spacing
+    slope = -0.34683009554825994
+    intercept = 6.255901161926431
+    br_frac = -1/slope*(q_to_a(center,plane)-intercept)
+    return br_frac
 
 # %%
