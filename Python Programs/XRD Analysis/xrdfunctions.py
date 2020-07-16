@@ -112,7 +112,7 @@ def q_to_chem(center,plane):
     return br_frac
 
 # %%
-def time(x,speed,start_lag):
+def frames_to_time(x,speed,start_lag):
     #x=num_frames
     #speed=shutter speed in s
     #start_lag=t at x=0
