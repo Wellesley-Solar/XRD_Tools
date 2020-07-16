@@ -36,7 +36,7 @@ def trim_data(x, data, limit1, limit2):
     set2 = find_nearest(x,limit2)
     return x[set1:set2], data[set1:set2,:]
 
-def back_substract(x, data, length):
+def back_subtract(x, data, length):
     #x is a 1D array of two theta or q values
     #data is an array of x-ray intensities
     #length is the numper of values on the edges of the data you want to 
@@ -45,7 +45,8 @@ def back_substract(x, data, length):
     data_linear = np.hstack((data[0:length], data[-length:-1])) #We'll use these to fit a straight line
     slope, intercept = np.polyfit(x_linear, data_linear, 1) #Do linear fit
     back = slope*x+intercept 
-    return data-back
+    data_correct=(data-back)
+    return data_correct
 
 def gaussian(x, a, b, c): 
     #generic gaussian curve, for XRD analysis:
