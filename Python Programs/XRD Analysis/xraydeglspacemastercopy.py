@@ -40,33 +40,26 @@ plt.show()
 #%%
 #choose a peak and find its limits 
 trim_data(q, perov_intensity, limit1, limit2)
-q_1 = limit1
-q_2 = limit2
 q_sub = x[set1:set2]
 perov_sub = data[set1:set2,:]
 plt.plot(q_sub,perov_sub[:,-1])
 plt.show()
 
 #%%
-#remove background
+#size
 size = perov_sub.shape
 print (size)
 q_bins = size[0]
 num_frames = size[1]
-slope = np.zeros((num_frames,1))
-intercept = np.zeros((num_frames,1))
-back = np.zeros((q_bins,num_frames))
-int_correct = np.zeros((q_bins,num_frames))
 
 #%%
-#accept a data file and range and returns average values at start and end of range
-#FEEDBACK Can do this using the function defined in xrd functions
-for i in range(num_frames): 
-    slope[i] = ((np.mean(perov_sub[-10:-1,i])-np.mean(perov_sub[0:10,i]))/(np.mean(q[limit2-10:limit2])-np.mean(q[limit1:limit1+10])))
-    intercept[i]=perov_sub[0,i]-slope[i]*q_sub[0]
-    back[:,i] = [slope[i]*element+intercept[i] for element in q_sub]
-    int_correct[:,i] = perov_sub[:,i]-np.array(back[:,i])
-plt.plot(np.array(q_sub),int_correct)
+#remove background
+no_back=back_subtract(x, data, length)
+    #x is a 1D array of two theta or q values (ie q_sub in old code)
+    #data is an array of x-ray intensities (ie int_correct in old code)
+    #length is the number of values on the edges of the data you want to use to create a linear background (limit1 to limit2)
+print(no_back)
+plt.plot(no_back)
 plt.show()
 
 #%%
@@ -92,7 +85,7 @@ plt.xlabel('time(s)')
 plt.ylabel('Lattice Spacing(angstrom)')
 plt.title('Lattice Spacing vs. Time')
 plt.xlim()
-plt.ylim(0,101)
+plt.ylim()
 plt.legend(frameon=True, fancybox=True,framealpha=1, shadow=False, borderpad=1, 
            title="figure_info", loc='lower right', fontsize='14')
 plt.show()
