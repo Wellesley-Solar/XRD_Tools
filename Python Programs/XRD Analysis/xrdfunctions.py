@@ -53,7 +53,7 @@ def gaussian(x, a, b, c):
     #a is the max intensity of the peak and representative of crystalling
     #b is the peak position and 
     # c is the FWHM
-    return a/(c*np.sqrt(2*np.pi))*np.exp(-(x - b)**2/(2*c**2))
+    return a*np.exp(-(x - b)**2/(2*c**2))
 
 def two_gaussians(x, a1, b1, c1, a2, b2, c2):
         return (gaussian(x, a1, b1, c1) +

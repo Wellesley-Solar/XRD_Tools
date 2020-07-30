@@ -11,12 +11,13 @@ import pandas as pd
 from xrdfunctions import csv_to_np, two_to_q, trim_data, num_files, back_subtract, pvoigt, gaussian, three_gaussians, q_to_a
 perov_import = csv_to_np('/Users/rbelisle/Desktop/SSRL_data/startend_wedge.csv')
 #%% Covert to Q
-q = two_to_q(perov_import[:,0],0.9763)
+wavelength = 0.982381 #value from qsas with optimized energy
+q = two_to_q(perov_import[:,0],wavelength)
 perov = perov_import[:,1:] #seperate XRD intensities from rest of data 
 #%% #Trim and Remove Background
 miller = [1, 0, 0] #peak you are trying to capture
-q_1 = .96
-q_2 = 1.11
+q_1 = 0.95
+q_2 = 1.1
 q_sub, perov_sub = trim_data(q,perov,q_1,q_2)
 perov_fit = perov_sub
 files = num_files(perov_sub)
@@ -51,4 +52,4 @@ print('Intensity:', popt[0], popt[3], popt[6])
 print('Lattice Spacing:', q_to_a(popt[1],miller),q_to_a(popt[4],miller), q_to_a(popt[7],miller))
 
 
-# %%
+# %% should add saving trimmed csv somewehre

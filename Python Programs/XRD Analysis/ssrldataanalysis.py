@@ -42,7 +42,7 @@ def three_gaussians(x, h1, c1, w1, h2, c2, w2, h3, c3, w3):
         return (gaussian(x, h1, c1, w1) +
             gaussian(x, h2, c2, w2)+gaussian(x, h3, c3, w3))
 #%%
-perov = readcsv('/Users/rbelisle/Desktop/startendxrd/D2_L60_on.csv') #openfile of interest
+perov = readcsv('/Users/rbelisle/Desktop/startendxrd/initial.csv') #openfile of interest
 plt.plot(perov[:,0],perov[:,1]) #plot inititial data
 plt.title('Initial:')
 plt.xlabel('2-theta')
@@ -57,7 +57,7 @@ q =[4*math.pi*math.sin(math.pi/180*row/2)/0.9763 for row in perov[:,0]]
 plt.title('Initial:')
 plt.xlabel('Q')
 plt.ylabel('Intensity')
-q_1 = 1.96
+q_1 = 1.94
 q_2 = 2.18
 limit1 = q.index(find_nearest(q, q_1))
 limit2 = q.index(find_nearest(q, q_2))
@@ -65,7 +65,7 @@ q_sub = q[limit1:limit2]
 
 #q_sub = q[limit1:limit2]
 #int_sub = y[limit1:limit2]
-perov_sub = perov[limit1:limit2,1:-1]
+perov_sub = perov[limit1:limit2,1:]
 plt.plot(q_sub,perov_sub[:,-1])
 
 #%%
@@ -89,7 +89,7 @@ plt.plot(np.array(q_sub),int_correct)
 
 # %%
 #iterative guassian fitting
-p0 = [100, 2.07, 0.01] 
+p0 = [50, 2.04, 0.01]#, 20, 2.04, 0.01] 
 intensity_1 = np.zeros((num_frames)) #create correct size arrays for running in the loop
 intensity_2= np.zeros((num_frames))
 lattice_1= np.zeros((num_frames))
@@ -99,7 +99,7 @@ for j in range(num_frames):
     popt, pcov = curve_fit(gaussian, np.array(q_sub), int_correct[:,j], p0)
     intensity_1[j] = popt[0]
     lattice_1[j] = 4*math.pi/popt[1] 
-   # intensity_2[j] = popt[3]
+    #intensity_2[j] = popt[3]
     #lattice_2[j] = 4*math.pi/popt[4]
     p0 = popt #once you have the initial fit use that as your next guess, we expect things to be continuous so this helps with that
     print(lattice_1)
