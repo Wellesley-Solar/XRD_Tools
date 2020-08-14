@@ -41,14 +41,20 @@ for frame in range(files):
     print('Intensity:', popt[1], error[1])
     print('Lattice Spacing:', q_to_a(popt[2],miller), error[2])
 # %% #Assign chemistry and fit
-chem = np.array([.33, .5, .67, .75, 1]) #percent bromine for high confidence fits
-fits = lattice[1:] #lattice spacings for cubic perovskites
+chem = np.array([0, .33, .5, .67, .75, 1]) #percent bromine for high confidence fits
+fits = lattice #lattice spacings for cubic perovskites
+fits[0] = 6.272 #psuedocubic fit from additional analysis 
 def linear(x,m,b):
     return m*x + b
 popt, pcov = curve_fit(linear, chem, fits)
-plt.plot(chem,fits, 'ro')
-plt.plot(chem,linear(chem,*popt),'b-')
 
+plt.figure(num = 1, figsize=(8,6))
+fig1,ax1 = plt.subplots()
+ax1.set_xlabel('Bromine Fraction [x]',size=14) #Define x-axis label
+ax1.set_ylabel('Lattice Spacing [$\AA$]',size=14)#Define y-axis label
+plt.plot(chem,fits, 'ko')
+plt.plot(chem,linear(chem,*popt),'k--')
+plt.savefig('Initial Lattice.png')
 # %% predict q for specific bromine compositions
 def predict_lattice(m,b,br):
     return m*br+b
