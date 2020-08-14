@@ -15,9 +15,9 @@ wavelength = 0.982381 #value from qsas with optimized energy
 q = two_to_q(perov_import[:,0],wavelength)
 perov = perov_import[:,1:] #seperate XRD intensities from rest of data 
 #%% #Trim and Remove Background
-miller = [1, 0, 0] #peak you are trying to capture
-q_1 = 0.95
-q_2 = 1.1
+miller = [2, 0, 0] #peak you are trying to capture
+q_1 = 1.94
+q_2 = 2.18
 q_sub, perov_sub = trim_data(q,perov,q_1,q_2)
 perov_fit = perov_sub
 files = num_files(perov_sub)

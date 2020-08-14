@@ -111,7 +111,6 @@ def q_to_chem(center,plane):
     br_frac = -1/slope*(q_to_a(center,plane)-intercept)
     return br_frac
 
-# %%
 def frames_to_time(x,speed,start_lag):
     #x=num_frames
     #speed=shutter speed in s
