@@ -66,7 +66,7 @@ def multi_gaussian(x, guesses):
     peaks = [gaussian(x, fit[0], fit[1], fit[2]) for fit in guesses]
     return np.sum(peaks, axis=0)
 
-#%% Define three peak fitting
+# Define three peak fitting
 def three_gaussians(x, a1, b1, c1, a2, b2, c2, a3, b3, c3):
     return (gaussian(x, a1, b1, c1) +
             gaussian(x, a2, b2, c2)+ #this would be your initial peak center in Q
@@ -117,3 +117,13 @@ def frames_to_time(x,speed,start_lag):
     #start_lag=t at x=0
     seconds=np.array([(x*speed)+ start_lag])
     return seconds
+
+def perovtopbi2(q, intensity):
+    #array is a 1D vector of  q values
+    #intensity is a 1D vector of perovskite intensities
+    leadiodide_q = 0.9 #rough q of lead iodide peak 
+    pad = 10 #number of points around leadiodide_q to look for true max
+    peak = find_nearest(q,leadiodide_q)
+    leadiodide_inensity = max(intensity[peak-pad:peak+pad])
+    ratio = max(intensity)/leadiodide_inensity
+    return ratio

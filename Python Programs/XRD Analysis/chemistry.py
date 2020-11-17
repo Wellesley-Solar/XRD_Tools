@@ -7,7 +7,7 @@ import scipy.stats
 import scipy.optimize 
 from scipy.optimize import curve_fit
 import pandas as pd
-#from xrdfunctions import csv_to_np, two_to_q, trim_data, num_files, back_subtract, pvoigt, gaussian, three_gaussians, q_to_a
+from xrdfunctions import csv_to_np, two_to_q, trim_data, num_files, back_subtract, pvoigt, gaussian, three_gaussians, q_to_a
 wavelength = 0.982381 #value from qsas with optimized energy
 
 #Import Data
@@ -36,7 +36,7 @@ for frame in range(files):
     lattice[frame] = q_to_a(popt[2],miller)
     plt.plot(q_sub, perov_fit[:,frame])
     plt.plot(q_sub, pvoigt(q_sub, *popt))
-    error let'= np.sqrt(np.diag(pcov))
+    error = np.sqrt(np.diag(pcov))
     print(error)
     print('Intensity:', popt[1], error[1])
     print('Lattice Spacing:', q_to_a(popt[2],miller), error[2])
