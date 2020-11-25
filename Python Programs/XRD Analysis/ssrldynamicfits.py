@@ -35,16 +35,6 @@ plt.plot(q_sub,perov_fit[:,image],'b-', label='Data') #plot subfield of data
 plt.plot(q_sub,pvoigt(q_sub, *popt),'c--', label='Model') #plot best fit
 init_q = popt[2]
 
-#%% Do Curve Fitting For One Peak
-image = 0 #index of file you want to look at
-p0 = [0.2, 300, 2, .01] #best guess for initial values in format [a1, b1, c1, a2, c2, a3, b3, c3]
-upper_limit = [1, 3000, q_2, 5]
-lower_limit = [0, 0, q_1, 0]
-popt,pcov = curve_fit(pvoigt, q_sub, perov_fit[:,image], p0, bounds=(lower_limit, upper_limit), maxfev=6000)
-plt.plot(q_sub,perov_fit[:,image],'b-', label='Data') #plot subfield of data
-plt.plot(q_sub,pvoigt(q_sub, *popt),'c--', label='Model') #plot best fit
-init_q = popt[2]
-
 #%% Do Curve Fitting for Three Peaks TEST CELL (run this before running full loop to make sure nothing weird is happening)
 image = 1 #index of file you want to look at
 p0 = [5, init_q-.01, .01, 5, init_q, .001, 10, init_q+.01, .01] #best guess for initial values in format [a1, b1, c1, a2, c2, a3, b3, c3]
@@ -84,8 +74,8 @@ for frame in range(files):
     print('Intensity:', popt[0])
     print('Lattice Spacing:', q_to_a(popt[1],miller))
     p0=popt
-    upper_limit = [30, init_q, .3, 30, init_q+.001, .3, 30, q_2, .1] #upper limits fot the range where one peak is iodine rich and the other is bromine
-    lower_limit = [0, q_1, 0, 0, init_q-0.001, 0, 0, init_q, 0]
+    upper_limit = [30, popt[1], .3, 30, init_q+.001, .3, 30, q_2, .1] #upper limits fot the range where one peak is iodine rich and the other is bromine
+    lower_limit = [0, q_1, 0, 0, init_q-0.001, 0, 0, popt[7], 0]
 
 #%% Plot lattice spacings over time
 plt.figure(figsize=(5,4)) #make plot larger
@@ -94,44 +84,3 @@ plt.ylabel('Lattice Spacing [$\AA$]',size=14)#Define y-axis label
 plt.plot(time,lattice1,'r.')
 plt.plot(time,lattice2, 'k.')
 plt.plot(time, lattice3, 'b.')
-# %% Cell for XRay degredation analysis should make this a function 
-files = num_files(perov)
-lead = time = np.zeros(files)
-for frame in range(files): 
-    lead[frame] = perov_fit[80,frame]/perov_fit[35,frame]
-    time[frame] = frame*20
-plt.figure(figsize=(5,4)) #make plot larger
-plt.xlabel('X-ray Exposure [s]',size=14) #Define x-axis label
-plt.ylabel('Perovskite to Lead Iodide Ratio',size=14) #Define x-axis label
-plt.plot(time, lead,'ko')
-plt.ylim(10, 15)
-
-# %% Test Cell: Not for permanent 
-def perovtopbi2(q, intensity):
-    #array is a 1D vector of  q values
-    #intensity is a 1D vector of perovskite intensities
-    leadiodide_q = 0.9 #rough q of lead iodide peak 
-    pad = 10 #number of points around leadiodide_q to look for true max
-    peak = find_nearest(q,leadiodide_q)
-    leadiodide_inensity = max(intensity[peak-pad:peak+pad])
-    ratio = max(intensity)/leadiodide_inensity
-    return ratio
-
-
-
-# %%
-perovtopbi2(q_sub,perov_fit[:,0])
-# %%
-files = num_files(perov)
-time = np.zeros(files)
-lead = np.zeros(files)
-# time = np.zeros(files)
-print(lead)
-for frame in range(files): 
-    time[frame] = frame*20
-    lead[frame] = perovtopbi2(q_sub, perov_fit[:,frame])
-
-print(lead)
-print(time)
-
-# %%
