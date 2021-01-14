@@ -9,16 +9,16 @@ import pandas as pd
 
 #%% Import Data
 from xrdfunctions import *
-perov_import = csv_to_np('/Users/rbelisle/Desktop/Xraydeg/C1_MAPbBr50_Xraydeg/c1_deg.csv')
+perov_import = csv_to_np('/Users/rbelisle/Desktop/5050onoff/lighton.csv')
 
 #%% Covert to Q
 q = two_to_q(perov_import[:,0],0.982381)
 perov = perov_import[:,1:] #seperate XRD intensities from rest of data 
 
 #%% #Trim and Remove Background
-miller = [1, 0, 0] #peak you are trying to capture
-q_1 = 0.8
-q_2 = 1.15
+miller = [2, 0, 0] #peak you are trying to capture
+q_1 = 1.94
+q_2 = 2.18
 q_sub, perov_sub = trim_data(q,perov,q_1,q_2)
 perov_fit = perov_sub
 files = num_files(perov_sub)
@@ -54,8 +54,10 @@ print('Intensity:', popt[0], popt[3], popt[6])
 print('Lattice Spacing:', q_to_a(popt[1],miller),q_to_a(popt[4],miller), q_to_a(popt[7],miller))
 
 
-#%% #Loop through Data
-files = num_files(perov) #determine the number of images I have
+#%% #Loop through light on Data
+min_lattice_change = .02 
+#offset = 2*math.pi/(min_lattice_change) #sets a maximum change in q in 2 minute interval
+files = num_files(perov)-1 #determine the number of images I have
 time = np.zeros(files)
 lattice1 = np.zeros(files)
 lattice2 = np.zeros(files)
@@ -75,8 +77,11 @@ for frame in range(files):
     print('Lattice Spacing:', q_to_a(popt[1],miller))
     p0=popt
     upper_limit = [30, popt[1], .3, 30, init_q+.001, .3, 30, q_2, .1] #upper limits fot the range where one peak is iodine rich and the other is bromine
-    lower_limit = [0, q_1, 0, 0, init_q-0.001, 0, 0, popt[7], 0]
+    lower_limit = [0, popt[1]-offset, 0, 0, init_q-0.001, 0, 0, popt[7], 0]
 
+#%% Loop through Dark
+#p0 = popt 
+#bounds assume opposite direction change (lower q peak gets larger, higher peak gets smaller)
 #%% Plot lattice spacings over time
 plt.figure(figsize=(5,4)) #make plot larger
 plt.xlabel('Time [min]',size=14) #Define x-axis label
@@ -84,3 +89,5 @@ plt.ylabel('Lattice Spacing [$\AA$]',size=14)#Define y-axis label
 plt.plot(time,lattice1,'r.')
 plt.plot(time,lattice2, 'k.')
 plt.plot(time, lattice3, 'b.')
+
+# %%
