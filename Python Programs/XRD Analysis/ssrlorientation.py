@@ -16,8 +16,8 @@ import pandas as pd
 from xrdfunctions import gaussian, lorentz, pvoigt
 
 #%% Import the image you would like to analyze
-directory = '/Volumes/GoogleDrive/Shared drives/Wellesley Solar/Current Projects/ Hoke Effect/Inital_all_compositions/'
-file_interest = 'F1_MAPbBr3_xraydeg_20s_01230646_0001.tif'
+directory = '/Users/rbelisle/Desktop/OrientationAnalysis/'
+file_interest = 'C1_MAPbBr50_L60Off_30s_01230231_0060.tif'
 dataFile = directory+file_interest
 data = fabio.open(dataFile).data # Use fabio to open file as a np.array
 
@@ -49,8 +49,13 @@ ax2.xaxis.set_ticks_position('both')
 ax2.imshow(ii_2d, extent=(np.min(qxy_2d)/10,np.max(qxy_2d)/10,np.min(qz_2d)/10,np.max(qz_2d)/10), vmin = 3, vmax = 100, origin='lower') 
 plt.ylim(0,3.5)
 plt.xlim(-2,2)
+
+#%% Save corrected figure
+temp = file_interest.split(sep='.')
+filename = temp[0]+'_corrected.png'
+fig2.savefig(directory+filename, bbox_inches='tight', dpi=900, transparent=True)
 #%% Do 1D plot to identify peak position and width
-Itest, q = pg.profile_sector(data, correctSolidAngle=True, radial_range = (10, 11), method='bbox', npt=3000) #look for peak between 1 and 1.1 Ang^-1
+Itest, q = pg.profile_sector(data, correctSolidAngle=True, radial_range = (9.5, 11), method='bbox', npt=3000) #look for peak between 1 and 1.1 Ang^-1
 p0 = [.1, 140, 10.4, .2] #initial guess at fit paramenters
 popt,pcov = curve_fit(pvoigt, q, Itest-Itest[0], p0, maxfev=6000) #fit peak using psuedovoigt
 plt.plot(q,pvoigt(q, *popt),'c--', label='Model') #plot best fit
@@ -71,22 +76,3 @@ plt.plot(chi,Icorrect)
 temp = file_interest.split(sep='.')
 filename = temp[0]+'_orientation.png'
 fig3.savefig(directory+filename, bbox_inches='tight', dpi=900, transparent=True)
-#%% Temporary cell
-fig, axs = plt.subplots(2,3, sharex=True, sharey=True, figsize=(8,6))
-axs[0,0].plot(chi,I3/np.nanmax(I3), 'k', label = 'x = 0')
-axs[0,0].set(ylabel='Norm. Intensity (a.u.)')
-axs[0,0].set_xlim([0,70])
-
-axs[0,1].plot(chi,I2/np.nanmax(I2), 'b')
-axs[0,2].plot(chi,I5/np.nanmax(I5), 'r')
-axs[1,0].plot(chi,I1/np.nanmax(I1), 'g')
-axs[1,0].set(xlabel = '$\chi$ ($^\circ$)', ylabel='Norm. Intensity (a.u.)')
-
-axs[1,1].plot(chi,I25/np.nanmax(I25), 'm')
-axs[1,1].set(xlabel = '$\chi$ ($^\circ$)')
-
-axs[1,2].plot(chi,I0/np.nanmax(I0), 'y')
-axs[1,2].set(xlabel = '$\chi$ ($^\circ$)')
-# %%
-fig.savefig(directory+'_allorientation.png', bbox_inches='tight', dpi=900, transparent=True)
-# %%

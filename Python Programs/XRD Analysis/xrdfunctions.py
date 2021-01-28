@@ -14,6 +14,10 @@ def csv_to_np(filename):
     data = pd.read_csv(filename)
     return(np.array(data))
 
+def norm(x):
+    #returns normalized version of an array
+    return x/np.nanmax(x)
+
 def two_to_q(two_theta, wave):
     #two_theta is a 1D array of two_theta angles
     #wave is the X-ray energy in angstroms
@@ -55,6 +59,13 @@ def gaussian(x, a, b, c):
     # c is the FWHM
     return a*np.exp(-(x - b)**2/(2*c**2))
 
+def normal_gaussian(x, a, b): 
+    #nomralized gaussian curve for XRD analysis:
+    #x is a 1D array of two theta or q values
+    #a is the peak position and 
+    #b is the FWHM
+    return 2/b*sqrt(ln(2)/math.pi)*np.exp(-4*ln(2)/b**2*(x - a)**2)
+
 def two_gaussians(x, a1, b1, c1, a2, b2, c2):
         return (gaussian(x, a1, b1, c1) +
             gaussian(x, a2, b2, c2))
@@ -71,6 +82,13 @@ def three_gaussians(x, a1, b1, c1, a2, b2, c2, a3, b3, c3):
     return (gaussian(x, a1, b1, c1) +
             gaussian(x, a2, b2, c2)+ #this would be your initial peak center in Q
             gaussian(x, a3, b3, c3))
+def normal_gaussian(x, a, b, c): 
+    #nomralized gaussian curve for XRD analysis:
+    #x is a 1D array of two theta or q values
+    #a is the instensity 
+    #b is the peak position and 
+    #c is the variance (FWHM = sqrt(2ln2)*c)
+    return a/(c*np.sqrt(2*math.pi))*np.exp(-(x - b)**2/(2*c**2))
 
 def lorentz(x, a, b, c):
     #generic lorentzian curve, for xrd analysis
@@ -78,14 +96,15 @@ def lorentz(x, a, b, c):
     #a is the max intensity of the peak and representative of crystalling
     #b is the peak position and 
     # c is the FWHM
-    return a/np.pi*(c/((x-b)**2+c**2))
+    return a/np.pi*((c/2)/((x-b)**2+(c/2)**2))
 
 def pvoigt(x, e, a, b, c):
     #pseudovoigt curve common in xrd analysis
     #linear combination of lorentzian and gaussian curves
     #e is the fraction that is lorentzian
-    return e*lorentz(x, a, b, c) + (1-e)*gaussian(x,a,b,c)
-
+    c_g = c/(2*np.sqrt(2*np.log(2)))
+    return e*lorentz(x, a, b, c) + (1-e)*normal_gaussian(x,a,b,c_g)
+    
 def mult_pvoigt(x, e, a, b, c, a2, b2, c2, a3, b3, c3):
     return pvoigt(x, e, a, b, c) + pvoigt(x, e, a2, b2, c2) +  pvoigt(x, e, a3, b3, c3) 
 
@@ -106,9 +125,9 @@ def q_to_chem(center,plane):
     #plane is a list of the formal [h,k,l]
     #takes peak position in q and converts it to bromine percentage
     #using linear fit for bromine fraction on lattice spacing
-    slope = -0.34683009554825994
-    intercept = 6.255901161926431
-    br_frac = -1/slope*(q_to_a(center,plane)-intercept)
+    slope = -0.3637
+    intercept = 6.2841
+    br_frac = 1/slope*(q_to_a(center,plane)-intercept)
     return br_frac
 
 def frames_to_time(x,speed,start_lag):

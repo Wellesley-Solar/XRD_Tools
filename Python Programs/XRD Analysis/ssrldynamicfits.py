@@ -6,9 +6,9 @@ import scipy.stats
 import scipy.optimize 
 from scipy.optimize import curve_fit
 import pandas as pd
+from xrdfunctions import *
 
 #%% Import Data
-from xrdfunctions import *
 perov_import = csv_to_np('/Users/rbelisle/Desktop/5050onoff/lighton.csv')
 
 #%% Covert to Q
@@ -90,4 +90,12 @@ plt.plot(time,lattice1,'r.')
 plt.plot(time,lattice2, 'k.')
 plt.plot(time, lattice3, 'b.')
 
-# %%
+# %%cell to look at intensity changes over time
+files = num_files(perov) #determine the number of images I have
+intensity = np.zeros(files)
+time = np.zeros(files)
+for frame in range(files): 
+    intensity[frame] = sum(perov_fit[:,frame])
+    time[frame] = frame*20+20
+
+
