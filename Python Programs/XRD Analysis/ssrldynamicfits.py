@@ -55,14 +55,19 @@ print('Lattice Spacing:', q_to_a(popt[1],miller),q_to_a(popt[4],miller), q_to_a(
 
 
 #%% #Loop through light on Data
-min_lattice_change = .02 
+#min_lattice_change = 1 
 #offset = 2*math.pi/(min_lattice_change) #sets a maximum change in q in 2 minute interval
 files = num_files(perov)-1 #determine the number of images I have
 time = np.zeros(files)
 lattice1 = np.zeros(files)
 lattice2 = np.zeros(files)
 lattice3 = np.zeros(files)
-intensity = np.zeros(files) #generate empty arrays for the parameters I'll be capturing
+phase1 = np.zeros(files) #generate empty arrays for the parameters I'll be capturing
+phase2 = np.zeros(files)
+phase3 = np.zeros(files)
+chem1 = np.zeros(files)
+chem2 = np.zeros(files)
+chem3 = np.zeros(files)
 p0 = [5, init_q-.01, .01, 5, init_q, .001, 10, init_q+.01, .01] #best guess for initial values in format [a1, b1, c1, a2, c2, a3, b3, c3]
 upper_limit = [30, init_q, .3, 30, init_q+.001, .3, 30, q_2, .1] #upper limits fot the range where one peak is iodine rich and the other is bromine
 lower_limit = [0, q_1, 0, 0, init_q-0.001, 0, 0, init_q, 0]
@@ -72,12 +77,18 @@ for frame in range(files):
     lattice1[frame] = q_to_a(popt[1],miller)
     lattice2[frame] = q_to_a(popt[4],miller)
     lattice3[frame] = q_to_a(popt[7],miller)
+    phase1[frame] = sum(gaussian(q_sub,*popt[0:3]))
+    phase2[frame] = sum(gaussian(q_sub,*popt[3:6]))
+    phase3[frame] = sum(gaussian(q_sub,*popt[6:]))
+    chem1[frame] = q_to_chem(popt[1],miller)
+    chem2[frame] = q_to_chem(popt[4],miller)
+    chem3[frame] = q_to_chem(popt[7],miller)
     time[frame] = frame*20+20
     print('Intensity:', popt[0])
     print('Lattice Spacing:', q_to_a(popt[1],miller))
     p0=popt
     upper_limit = [30, popt[1], .3, 30, init_q+.001, .3, 30, q_2, .1] #upper limits fot the range where one peak is iodine rich and the other is bromine
-    lower_limit = [0, popt[1]-offset, 0, 0, init_q-0.001, 0, 0, popt[7], 0]
+    lower_limit = [0, q_1, 0, 0, init_q-0.001, 0, 0, popt[7], 0]
 
 #%% Loop through Dark
 #p0 = popt 
@@ -91,11 +102,10 @@ plt.plot(time,lattice2, 'k.')
 plt.plot(time, lattice3, 'b.')
 
 # %%cell to look at intensity changes over time
-files = num_files(perov) #determine the number of images I have
-intensity = np.zeros(files)
-time = np.zeros(files)
-for frame in range(files): 
-    intensity[frame] = sum(perov_fit[:,frame])
-    time[frame] = frame*20+20
+# have area of phases already
+#plt.plot(time, (phase1+phase2+phase3)/(phase1[0]+phase2[0]+phase3[0]))
+plt.plot(time, -1*(chem1*phase1+chem2*phase2+chem3*phase3)/(phase1+phase2+phase3))
 
 
+
+# %%
