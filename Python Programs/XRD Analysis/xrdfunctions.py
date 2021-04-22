@@ -82,6 +82,7 @@ def three_gaussians(x, a1, b1, c1, a2, b2, c2, a3, b3, c3):
     return (gaussian(x, a1, b1, c1) +
             gaussian(x, a2, b2, c2)+ #this would be your initial peak center in Q
             gaussian(x, a3, b3, c3))
+            
 def normal_gaussian(x, a, b, c): 
     #nomralized gaussian curve for XRD analysis:
     #x is a 1D array of two theta or q values
@@ -146,3 +147,4 @@ def perovtopbi2(q, intensity):
     leadiodide_inensity = max(intensity[peak-pad:peak+pad])
     ratio = max(intensity)/leadiodide_inensity
     return ratio
+# %%
