@@ -28,13 +28,13 @@ for file in range(files):
     perov_fit[:,file] = back_subtract(q_sub,perov_sub[:,file],10) #remove background from that file
 
 #%% DETERMENING PHASES
-sample = 'Bromine50'
-name = 'x = 0.50'
-image_start = 3 #index of file before illumination
-image_sun = 4 #index of file at one sun
+sample = 'Bromine67'
+name = 'x = 0.67'
+image_start = 9 #index of file before illumination
+image_sun = 0 #index of file at one sun
 
 
-# Do Curve Fitting For One Peak
+#   Do Curve Fitting For One Peak
 p0 = [0.2, 300, 2, .01] #best guess for initial values in format [a1, b1, c1, a2, c2, a3, b3, c3]
 upper_limit = [1, 3000, q_2, 5]
 lower_limit = [0, 0, q_1, 0]
@@ -43,8 +43,10 @@ plt.plot(q_sub,perov_fit[:,image_start],'b-', label='Data') #plot subfield of da
 plt.plot(q_sub,pvoigt(q_sub, *popt),'c--', label='Model') #plot best fit
 init_q = popt[2]
 init = popt
+fwhm.append(init[-1])
 
-#%% Do Curve Fitting for Light
+#%%
+#   Do Curve Fitting for Light
 p0 = [5, init_q-.01, .01, 5, init_q, .001, 10, init_q+.01, .01] #best guess for initial values in format [a1, b1, c1, a2, c2, a3, b3, c3]
 upper_limit = [30, init_q, .3, 30, init_q+.001, .3, 30, q_2, .1] #upper limits fot the range where one peak is iodine rich and the other is bromine
 lower_limit = [0, q_1, 0, 0, init_q-0.001, 0, 0, init_q, 0]

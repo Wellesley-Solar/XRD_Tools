@@ -15,7 +15,7 @@ samplelist = []
 results = {"Sample":"Results"}
 
 #%% Import Data
-samplename = 'B1_lighton'
+samplename = 'D2_lighton'
 perov_import = csv_to_np('/Users/rbelisle/Desktop/dynamics_on_off_750bins_wedge/' + samplename + '.csv')
 light_on = 1 # if light on set to 1 else set to 0
 interval = 2 # time interval between frames in minutes
