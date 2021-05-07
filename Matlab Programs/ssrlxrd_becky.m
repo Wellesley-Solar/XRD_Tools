@@ -2,7 +2,7 @@
 %assumes the first column of a csv is diffraction angle in 2_theta
 
 %used constants
-ang = .9763; %wavelength of x-ray in angstroms
+ang = 0.982381; %wavelength of x-ray in angstroms
 
 %open type of file in folder - will open all files of that type
 fileNames = {};
