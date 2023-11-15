@@ -7,7 +7,9 @@ import scipy.optimize
 from scipy.optimize import curve_fit
 import pandas as pd
 import math as math
-from xrdfunctions import csv_to_np, two_to_q, trim_data, num_files, back_subtract, pvoigt, gaussian, three_gaussians, q_to_a
+
+from xrdfunctions import csv_to_np, two_to_q, trim_data, num_files, back_subtract, pvoigt, gaussian, three_gaussians, q_to_a, q_to_chem
+
 
 #%% Import Data
 perov_import = csv_to_np('/Users/rbelisle/Desktop/SSRL_Data_113/all_wedge_onoff.csv')
@@ -165,7 +167,7 @@ ax1.plot(q_sub,norm(perov_fit[:,9]), color = 'm')
 ax1.set_ylabel('Norm. Intensity [a.u.]', size=12)
 
 # %% Save compound figure
-fig3.savefig('/Users/rbelisle/Desktop/SSRL_Data_113/'+'Figure2',bbox_inches='tight', dpi=900, transparent=True)
+#fig3.savefig('/Users/rbelisle/Desktop/SSRL_Data_113/'+'Figure2',bbox_inches='tight', dpi=900, transparent=True)
 
     
 
